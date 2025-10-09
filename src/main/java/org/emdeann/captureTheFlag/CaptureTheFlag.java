@@ -7,6 +7,7 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.emdeann.captureTheFlag.Commands.JoinTeamCommand;
 import org.emdeann.captureTheFlag.Commands.LeaveTeamCommand;
+import org.emdeann.captureTheFlag.Commands.SetFlagCommand;
 
 public final class CaptureTheFlag extends JavaPlugin {
 
@@ -17,6 +18,7 @@ public final class CaptureTheFlag extends JavaPlugin {
         Commands.literal("ctf")
             .then(JoinTeamCommand.createCommand(teamManager))
             .then(LeaveTeamCommand.createCommand(teamManager))
+            .then(SetFlagCommand.createCommand(teamManager))
             .build();
 
     this.getLifecycleManager()

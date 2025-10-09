@@ -9,33 +9,27 @@ import org.bukkit.entity.Player;
 import org.emdeann.captureTheFlag.CTFTeam;
 import org.emdeann.captureTheFlag.TeamManager;
 
-public class JoinTeamCommand {
-
+public class SetFlagCommand {
   public static LiteralArgumentBuilder<CommandSourceStack> createCommand(TeamManager teamManager) {
-    return Commands.literal("join")
+    return Commands.literal("setflag")
         .then(
             Commands.literal("red")
-                .requires(sender -> sender.getExecutor() instanceof Player)
-                .executes(ctx -> runJoinTeamCommand(ctx, teamManager, CTFTeam.RED)))
+                .requires(sender -> sender.getExecutor() instanceof Player player && player.isOp())
+                .executes(ctx -> runSetFlagCommand(ctx, teamManager, CTFTeam.RED)))
         .then(
             Commands.literal("blue")
-                .requires(sender -> sender.getExecutor() instanceof Player)
-                .executes(ctx -> runJoinTeamCommand(ctx, teamManager, CTFTeam.BLUE)));
+                .requires(sender -> sender.getExecutor() instanceof Player player && player.isOp())
+                .executes(ctx -> runSetFlagCommand(ctx, teamManager, CTFTeam.BLUE)));
   }
 
-  private static int runJoinTeamCommand(
+  public static int runSetFlagCommand(
       CommandContext<CommandSourceStack> ctx, TeamManager teamManager, CTFTeam team) {
     if (!(ctx.getSource().getExecutor() instanceof Player player)) {
       return Command.SINGLE_SUCCESS;
     }
 
-    if (teamManager.isParticipating(player)) {
-      player.sendPlainMessage("You are already on a team!");
-      return Command.SINGLE_SUCCESS;
-    }
-
-    teamManager.addPlayerToTeam((Player) ctx.getSource().getSender(), team);
-    ctx.getSource().getSender().sendPlainMessage("Joined team!");
+    teamManager.setFlagLocationForTeam(player.getLocation(), team);
+    player.sendPlainMessage("Flag location set!");
     return Command.SINGLE_SUCCESS;
   }
 }

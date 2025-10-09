@@ -1,0 +1,4 @@
+name: CaptureTheFlag
+version: '1.0'
+main: org.emdeann.captureTheFlag.CaptureTheFlag
+api-version: '1.21.8'

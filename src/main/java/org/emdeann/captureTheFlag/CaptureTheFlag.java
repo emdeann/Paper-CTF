@@ -21,10 +21,7 @@ public final class CaptureTheFlag extends JavaPlugin {
 
     this.getLifecycleManager()
         .registerEventHandler(
-            LifecycleEvents.COMMANDS,
-            commands -> {
-              commands.registrar().register(ctfCommands);
-            });
+            LifecycleEvents.COMMANDS, commands -> commands.registrar().register(ctfCommands));
   }
 
   @Override

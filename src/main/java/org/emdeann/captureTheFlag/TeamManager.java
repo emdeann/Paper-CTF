@@ -31,4 +31,8 @@ public class TeamManager {
   public void setFlagLocationForTeam(Location location, CTFTeam team) {
     teams.get(team).setFlagLocation(location);
   }
+
+  public boolean canStartGame() {
+    return teams.values().stream().allMatch(team -> team.playerCount() > 0);
+  }
 }

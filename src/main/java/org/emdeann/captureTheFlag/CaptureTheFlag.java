@@ -5,20 +5,21 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.emdeann.captureTheFlag.Commands.JoinTeamCommand;
-import org.emdeann.captureTheFlag.Commands.LeaveTeamCommand;
-import org.emdeann.captureTheFlag.Commands.SetFlagCommand;
+import org.emdeann.captureTheFlag.Commands.*;
 
 public final class CaptureTheFlag extends JavaPlugin {
 
   @Override
   public void onEnable() {
     TeamManager teamManager = new TeamManager();
+    GameManager gameManager = new GameManager(this, teamManager);
     LiteralCommandNode<CommandSourceStack> ctfCommands =
         Commands.literal("ctf")
             .then(JoinTeamCommand.createCommand(teamManager))
             .then(LeaveTeamCommand.createCommand(teamManager))
             .then(SetFlagCommand.createCommand(teamManager))
+            .then(StartGameCommand.createCommand(gameManager))
+            .then(StopGameCommand.createCommand(gameManager))
             .build();
 
     this.getLifecycleManager()

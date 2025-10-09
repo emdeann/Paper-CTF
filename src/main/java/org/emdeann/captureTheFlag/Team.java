@@ -28,6 +28,10 @@ public class Team {
     return players.contains(player);
   }
 
+  public int playerCount() {
+    return players.size();
+  }
+
   public void setFlagLocation(Location location) {
     if (this.flagLocation != null) {
       this.flagLocation.getBlock().setType(Material.AIR);

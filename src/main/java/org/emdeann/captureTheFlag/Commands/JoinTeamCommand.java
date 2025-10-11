@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import java.util.Locale;
 import org.bukkit.entity.Player;
 import org.emdeann.captureTheFlag.CTFTeam;
 import org.emdeann.captureTheFlag.TeamManager;
@@ -12,15 +13,15 @@ import org.emdeann.captureTheFlag.TeamManager;
 public class JoinTeamCommand {
 
   public static LiteralArgumentBuilder<CommandSourceStack> createCommand(TeamManager teamManager) {
-    return Commands.literal("join")
-        .then(
-            Commands.literal("red")
-                .requires(sender -> sender.getExecutor() instanceof Player)
-                .executes(ctx -> runJoinTeamCommand(ctx, teamManager, CTFTeam.RED)))
-        .then(
-            Commands.literal("blue")
-                .requires(sender -> sender.getExecutor() instanceof Player)
-                .executes(ctx -> runJoinTeamCommand(ctx, teamManager, CTFTeam.BLUE)));
+    LiteralArgumentBuilder<CommandSourceStack> commandTree = Commands.literal("join");
+    for (CTFTeam teamColor : CTFTeam.values()) {
+      commandTree =
+          commandTree.then(
+              Commands.literal(String.valueOf(teamColor).toLowerCase(Locale.ROOT))
+                  .requires(sender -> sender.getExecutor() instanceof Player)
+                  .executes(ctx -> runJoinTeamCommand(ctx, teamManager, teamColor)));
+    }
+    return commandTree;
   }
 
   private static int runJoinTeamCommand(

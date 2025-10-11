@@ -7,6 +7,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.emdeann.captureTheFlag.GameManager;
 
+/** Event handler for player removals (quit and kick). */
 public class PlayerRemoveListener implements Listener {
   private final GameManager gameManager;
 

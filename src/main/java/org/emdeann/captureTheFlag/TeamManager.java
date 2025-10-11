@@ -6,6 +6,10 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
+/**
+ * Manager class for team-related functions. Instantiated by {@link GameManager} and reused between
+ * games.
+ */
 public class TeamManager {
   private final Map<CTFTeam, Team> teams;
 
@@ -16,46 +20,74 @@ public class TeamManager {
             CTFTeam.BLUE, new Team(CTFTeam.BLUE));
   }
 
+  /**
+   * Adds a player to the specified team. Assumes that the player is not already on another team.
+   *
+   * @param player the player being assigned to a team
+   * @param team the team to add the player to
+   */
   public void addPlayerToTeam(Player player, CTFTeam team) {
     teams.get(team).addPlayer(player);
   }
 
+  /**
+   * Removes a player from their team. If a player is somehow on multiple teams, removes them from
+   * all teams.
+   *
+   * @param player the player to remove
+   */
   public void removePlayer(Player player) {
     for (Team team : teams.values()) {
       team.removePlayer(player);
     }
   }
 
-  public Optional<Team> getPlayerTeam(Player player) {
-    for (Team team : teams.values()) {
-      if (team.hasPlayer(player)) {
-        return Optional.of(team);
-      }
-    }
-
-    return Optional.empty();
-  }
-
+  /**
+   * Determines if a player is on any team.
+   *
+   * @param player the player to check
+   * @return whether the player is assigned to a team
+   */
   public boolean isParticipating(Player player) {
     return teams.values().stream().anyMatch(team -> team.hasPlayer(player));
   }
 
+  /**
+   * Sets the flag location for the specified team. The flag will spawn at the provided location
+   * when the game starts.
+   *
+   * <p>The location is also considered the "base" of the team for flag returns and player spawns.
+   *
+   * @param location The location to use
+   * @param team The team for which to set the flag location
+   */
   public void setFlagLocationForTeam(Location location, CTFTeam team) {
     teams.get(team).setFlag(location);
   }
 
+  /** Places each team's flag at their base location. */
   public void placeFlags() {
     for (Team team : teams.values()) {
       team.getFlag().ifPresent(Flag::place);
     }
   }
 
+  /** Removes each team's flag at the end of the game. */
   public void removeFlags() {
     for (Team team : teams.values()) {
       team.getFlag().ifPresent(Flag::remove);
     }
   }
 
+  /**
+   * If the block provided is a flag collectable or returnable by the player, it is returned.
+   *
+   * @param block the block to check
+   * @param player the player attempting to obtain the flag
+   * @param returnFlag true when testing if the flag is returnable (i.e. if the player matches the
+   *     team of the flag)
+   * @return the obtainable flag, if it exists
+   */
   public Optional<Flag> getObtainableFlag(Block block, Player player, boolean returnFlag) {
     if (!isParticipating(player)) {
       return Optional.empty();
@@ -69,6 +101,12 @@ public class TeamManager {
         .findFirst();
   }
 
+  /**
+   * Determines if the teams are prepared for the game to start. This is true if all teams have
+   * players and a flag set.
+   *
+   * @return if the game can be started
+   */
   public boolean canStartGame() {
     return teams.values().stream()
         .allMatch(team -> team.playerCount() > 0 && team.getFlag().isPresent());

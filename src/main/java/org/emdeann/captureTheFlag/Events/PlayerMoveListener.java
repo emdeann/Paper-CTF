@@ -16,6 +16,7 @@ public class PlayerMoveListener implements Listener {
     this.teamManager = teamManager;
   }
 
+  /** Returns the flag if it is touched by a player on the same team. */
   @EventHandler
   public void onPlayerMove(PlayerMoveEvent event) {
     // TODO should work when touching any face of the flag

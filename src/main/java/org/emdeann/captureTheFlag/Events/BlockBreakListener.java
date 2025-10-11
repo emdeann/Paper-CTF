@@ -18,6 +18,10 @@ public class BlockBreakListener implements Listener {
     this.teamManager = teamManager;
   }
 
+  /**
+   * Prevents block breaking and allows flags to be picked up when broken by a player on a different
+   * team.
+   */
   @EventHandler
   public void onBlockBreak(BlockBreakEvent event) {
     Optional<Flag> flag = teamManager.getObtainableFlag(event.getBlock(), event.getPlayer(), false);

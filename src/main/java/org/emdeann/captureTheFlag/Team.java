@@ -128,7 +128,7 @@ public class Team {
       return Optional.empty();
     }
 
-    return Optional.of(flag.getLocation());
+    return Optional.of(flag.getLocation().clone());
   }
 
   /**

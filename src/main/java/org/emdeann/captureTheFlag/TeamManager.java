@@ -115,4 +115,19 @@ public class TeamManager {
             .getScore();
     return teams.values().stream().filter(team -> team.getScore() == maxScore).toList();
   }
+
+  /**
+   * Gets the base location for the team the player is on
+   *
+   * @param player the player to check
+   * @return the base location of the player's team
+   */
+  public Location getBaseLocation(Player player) {
+    return teams.values().stream()
+        .filter(team -> team.hasPlayer(player))
+        .findFirst()
+        .orElseThrow()
+        .getFlagLocation()
+        .orElseThrow();
+  }
 }

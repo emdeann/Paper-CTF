@@ -7,10 +7,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import javax.annotation.Nullable;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
@@ -18,6 +21,7 @@ import org.bukkit.util.Vector;
 import org.emdeann.captureTheFlag.Events.BlockBreakListener;
 import org.emdeann.captureTheFlag.Events.PlayerMoveListener;
 import org.emdeann.captureTheFlag.Events.PlayerRemoveListener;
+import org.emdeann.captureTheFlag.Events.PlayerRespawnListener;
 import org.emdeann.captureTheFlag.Runnables.TimerRunnable;
 
 /**
@@ -30,23 +34,39 @@ public class GameManager {
   private final OutputManager outputManager;
   private boolean gameActive;
   private final Listener[] listeners;
-  private Map<Player, Team> flagCarriers;
+  private final Map<Player, Team> flagCarriers;
   private @Nullable BukkitTask gameTimer;
 
   private static final int SCORE_TO_WIN = 3;
   private static final int GAME_TIMER_SECONDS = 600;
   private static final float RETURN_DISTANCE = 1.1f;
-  private static final Vector UNIT_VECTOR_Y = new Vector(0, 1, 0);
+  public static final Vector UNIT_VECTOR_Y = new Vector(0, 1, 0);
+  private static final ItemStack[] DEFAULT_ITEMS =
+      new ItemStack[] {
+        new ItemStack(Material.STONE_SWORD),
+        new ItemStack(Material.STONE_PICKAXE),
+        new ItemStack(Material.COOKED_BEEF, 4),
+        new ItemStack(Material.STONE, 32)
+      };
+  private static final ItemStack[] DEFAULT_ARMOR =
+      new ItemStack[] {
+        new ItemStack(Material.LEATHER_BOOTS),
+        new ItemStack(Material.LEATHER_LEGGINGS),
+        new ItemStack(Material.LEATHER_CHESTPLATE),
+        new ItemStack(Material.LEATHER_HELMET)
+      };
 
   public GameManager(CaptureTheFlag plugin, TeamManager teamManager, OutputManager outputManager) {
     this.plugin = plugin;
     this.teamManager = teamManager;
     this.outputManager = outputManager;
+    this.flagCarriers = new HashMap<>();
     this.listeners =
         new Listener[] {
           new BlockBreakListener(this),
           new PlayerRemoveListener(this),
           new PlayerMoveListener(this),
+          new PlayerRespawnListener(this, teamManager),
         };
   }
 
@@ -67,7 +87,8 @@ public class GameManager {
             .runTaskTimer(this.plugin, 0, Tick.tick().fromDuration(Duration.ofSeconds(1)));
 
     gameActive = true;
-    this.flagCarriers = new HashMap<>();
+    this.flagCarriers.clear();
+    this.playerSetup();
     this.outputManager.onGameStart();
     teamManager.placeFlags();
     for (Listener listener : this.listeners) {
@@ -140,6 +161,10 @@ public class GameManager {
     if (captureTeam.getScore() >= SCORE_TO_WIN) {
       this.stopGame(false);
     }
+  }
+
+  public void onPlayerRespawn(Player player) {
+    this.setPlayerInventory(player);
   }
 
   /**
@@ -262,5 +287,24 @@ public class GameManager {
     // Consider the player as touching the block if they or their head is near enough
     return flagLoc.distanceSquared(playerLoc) < RETURN_DISTANCE
         || flagLoc.distanceSquared(playerLoc.add(UNIT_VECTOR_Y)) < RETURN_DISTANCE;
+  }
+
+  private void playerSetup() {
+    for (Team team : teamManager.getTeams()) {
+      for (Player player : team.getPlayers()) {
+        player.setHealth(20);
+        player.setFoodLevel(20);
+        player.setGameMode(GameMode.SURVIVAL);
+        player.clearActivePotionEffects();
+        this.setPlayerInventory(player);
+        player.teleport(team.getFlagLocation().orElseThrow().add(UNIT_VECTOR_Y));
+      }
+    }
+  }
+
+  private void setPlayerInventory(Player player) {
+    player.getInventory().clear();
+    player.getInventory().addItem(DEFAULT_ITEMS);
+    player.getInventory().setArmorContents(DEFAULT_ARMOR);
   }
 }

@@ -172,6 +172,7 @@ public class GameManager {
         .forEach(player -> player.removePotionEffect(PotionEffectType.GLOWING));
     this.flagCarriers.clear();
     this.teamManager.removeFlags();
+    this.teamManager.resetBases();
     this.outputManager.onGameStop();
     for (Listener listener : this.listeners) {
       HandlerList.unregisterAll(listener);

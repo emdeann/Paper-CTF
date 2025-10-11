@@ -38,6 +38,13 @@ public class TeamManager {
     teams.values().forEach(team -> team.removePlayer(player));
   }
 
+  /**
+   * Gets the team which a player belong to.
+   *
+   * @param player the player to check
+   * @return the team which the player belongs to
+   * @throws NoSuchElementException if the player is not participating
+   */
   public Team getPlayerTeam(Player player) {
     return teams.values().stream().filter(team -> team.hasPlayer(player)).findFirst().orElseThrow();
   }
@@ -73,6 +80,11 @@ public class TeamManager {
   /** Removes each team's flag at the end of the game. */
   public void removeFlags() {
     teams.values().forEach(Team::removeFlag);
+  }
+
+  /** Resets each team's base at the end of the game. */
+  public void resetBases() {
+    teams.values().forEach(Team::resetBase);
   }
 
   /**

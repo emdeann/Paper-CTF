@@ -16,6 +16,7 @@ public class Team {
   private @Nullable Flag flag;
   private int score;
   private @Nullable Location baseLocation;
+  private Material originalMaterialAtBase;
 
   private static final int CAPTURE_DISTANCE = 3;
 
@@ -23,6 +24,7 @@ public class Team {
     this.players = new ArrayList<>();
     this.teamColor = teamColor;
     this.score = 0;
+    this.originalMaterialAtBase = Material.AIR;
   }
 
   /**
@@ -68,6 +70,7 @@ public class Team {
    */
   public void setBaseLocation(Location location) {
     this.baseLocation = location;
+    this.originalMaterialAtBase = location.getBlock().getType();
     this.flag =
         new Flag(location, teamColor == CTFTeam.RED ? Material.RED_WOOL : Material.BLUE_WOOL);
   }
@@ -107,6 +110,16 @@ public class Team {
   public void removeFlag() {
     if (flag != null) {
       flag.remove();
+    }
+  }
+
+  /**
+   * Resets the block at this team's base to what it was originally. Important to remove bedrock if
+   * game ends while a flag is picked up.
+   */
+  public void resetBase() {
+    if (baseLocation != null) {
+      this.baseLocation.getBlock().setType(this.originalMaterialAtBase);
     }
   }
 

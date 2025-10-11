@@ -20,7 +20,7 @@ public class BlockBreakListener implements Listener {
 
   @EventHandler
   public void onBlockBreak(BlockBreakEvent event) {
-    Optional<Flag> flag = teamManager.getObtainableFlag(event.getBlock(), event.getPlayer());
+    Optional<Flag> flag = teamManager.getObtainableFlag(event.getBlock(), event.getPlayer(), false);
     flag.ifPresent(value -> gameManager.onFlagPickup(event.getPlayer(), value));
     // The game does not allow block breaks
     event.setCancelled(true);

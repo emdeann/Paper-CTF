@@ -56,13 +56,13 @@ public class TeamManager {
     }
   }
 
-  public Optional<Flag> getObtainableFlag(Block block, Player player) {
+  public Optional<Flag> getObtainableFlag(Block block, Player player, boolean returnFlag) {
     if (!isParticipating(player)) {
       return Optional.empty();
     }
 
     return teams.values().stream()
-        .filter(team -> !team.hasPlayer(player))
+        .filter(team -> team.hasPlayer(player) == returnFlag)
         .map(Team::getFlag)
         .flatMap(Optional::stream)
         .filter(flag -> flag.getLocation().getBlock().equals(block))

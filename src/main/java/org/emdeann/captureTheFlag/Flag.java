@@ -42,7 +42,7 @@ public class Flag {
     this.currentLocation.getBlock().setType(this.previousMaterialAtLocation);
   }
 
-  public void returnToBase(Location location) {
+  public void returnToBase() {
     this.remove();
     this.place(baseLocation);
   }

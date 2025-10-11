@@ -8,6 +8,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.emdeann.captureTheFlag.Events.BlockBreakListener;
+import org.emdeann.captureTheFlag.Events.PlayerMoveListener;
 import org.emdeann.captureTheFlag.Events.PlayerRemoveListener;
 
 public class GameManager {
@@ -21,7 +22,11 @@ public class GameManager {
     this.plugin = plugin;
     this.teamManager = teamManager;
     this.listeners =
-        new Listener[] {new BlockBreakListener(this, teamManager), new PlayerRemoveListener(this)};
+        new Listener[] {
+          new BlockBreakListener(this, teamManager),
+          new PlayerRemoveListener(this),
+          new PlayerMoveListener(this, teamManager),
+        };
   }
 
   public boolean startGame() {
@@ -57,6 +62,10 @@ public class GameManager {
     this.flagCarriers.remove(player);
     player.removePotionEffect(PotionEffectType.GLOWING);
     flag.place(player.getLocation());
+  }
+
+  public void onFlagReturn(Flag flag) {
+    flag.returnToBase();
   }
 
   public boolean stopGame() {

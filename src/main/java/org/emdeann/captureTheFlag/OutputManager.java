@@ -67,20 +67,26 @@ public class OutputManager {
     return toTitleCase(String.valueOf(team.getTeamColor()));
   }
 
-  public void onFlagPickup(Player player) {
-    sendMessageToPlayers(player.getName() + " has picked up a flag!");
+  public void onFlagPickup(Player player, Team flagTeam) {
+    sendMessageToPlayers(
+        player.getName() + " has picked up " + getTeamDisplayName(flagTeam) + "'s flag!");
   }
 
-  public void onFlagDrop(Player player) {
-    sendMessageToPlayers(player.getName() + " has dropped up the flag!");
+  public void onFlagDrop(Player player, Team flagTeam) {
+    sendMessageToPlayers(
+        player.getName() + " has dropped " + getTeamDisplayName(flagTeam) + "'s flag!");
   }
 
   public void onFlagReturn(Player player) {
     sendMessageToPlayers(player.getName() + " returned their team's flag!");
   }
 
-  public void onFlagCapture(Team captureTeam) {
-    sendMessageToPlayers(getTeamDisplayName(captureTeam) + " has captured a flag!");
+  public void onFlagCapture(Team captureTeam, Team flagTeam) {
+    sendMessageToPlayers(
+        getTeamDisplayName(captureTeam)
+            + " has captured "
+            + getTeamDisplayName(flagTeam)
+            + "'s flag!");
     this.updateScore(captureTeam);
   }
 

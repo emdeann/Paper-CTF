@@ -38,9 +38,7 @@ public class TeamManager {
    * @param player the player to remove
    */
   public void removePlayer(Player player) {
-    for (Team team : teams.values()) {
-      team.removePlayer(player);
-    }
+    teams.values().forEach(team -> team.removePlayer(player));
   }
 
   public Team getPlayerTeam(Player player) {
@@ -72,16 +70,12 @@ public class TeamManager {
 
   /** Places each team's flag at their base location. */
   public void placeFlags() {
-    for (Team team : teams.values()) {
-      team.getFlag().ifPresent(Flag::place);
-    }
+    teams.values().forEach(Team::placeFlag);
   }
 
   /** Removes each team's flag at the end of the game. */
   public void removeFlags() {
-    for (Team team : teams.values()) {
-      team.getFlag().ifPresent(Flag::remove);
-    }
+    teams.values().forEach(Team::removeFlag);
   }
 
   /**
@@ -106,17 +100,15 @@ public class TeamManager {
    *     team of the flag)
    * @return the obtainable flag, if it exists
    */
-  public Optional<Flag> getObtainableFlag(Block block, Player player, boolean returnFlag) {
+  public Optional<Team> getObtainableFlag(Block block, Player player, boolean returnFlag) {
     if (!isParticipating(player)) {
       return Optional.empty();
     }
 
     return teams.values().stream()
-        .filter(team -> team.hasPlayer(player) == returnFlag)
-        .map(Team::getFlag)
-        .flatMap(Optional::stream)
         .filter(
-            flag -> flag.getLocation().getBlock().equals(block) && !(returnFlag && flag.isAtBase()))
+            team ->
+                team.hasPlayer(player) == returnFlag && team.flagIsObtainable(block, returnFlag))
         .findFirst();
   }
 
@@ -127,8 +119,7 @@ public class TeamManager {
    * @return if the game can be started
    */
   public boolean canStartGame() {
-    return teams.values().stream()
-        .allMatch(team -> team.playerCount() > 0 && team.getFlag().isPresent());
+    return teams.values().stream().allMatch(team -> team.playerCount() > 0 && team.hasFlag());
   }
 
   /**

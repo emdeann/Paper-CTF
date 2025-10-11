@@ -21,7 +21,7 @@ public class GameManager {
   private final OutputManager outputManager;
   private boolean gameActive;
   private final Listener[] listeners;
-  private Map<Player, Flag> flagCarriers;
+  private Map<Player, Team> flagCarriers;
 
   private static final int SCORE_TO_WIN = 3;
 
@@ -74,14 +74,14 @@ public class GameManager {
    * Handles when a flag should be picked up by a player.
    *
    * @param player the player picking up the flag
-   * @param flag the flag being picked up
+   * @param flagTeam the team with the flag being picked up
    */
-  public void onFlagPickup(Player player, Flag flag) {
-    this.flagCarriers.put(player, flag);
+  public void onFlagPickup(Player player, Team flagTeam) {
+    this.flagCarriers.put(player, flagTeam);
     player.addPotionEffect(
         new PotionEffect(PotionEffectType.GLOWING, PotionEffect.INFINITE_DURATION, 1));
-    flag.pickUp();
-    outputManager.onFlagPickup(player);
+    flagTeam.pickUpFlag();
+    outputManager.onFlagPickup(player, flagTeam);
   }
 
   /**
@@ -91,10 +91,10 @@ public class GameManager {
    * @param player the player dropping the flag
    */
   public void onFlagDrop(Player player) {
-    Flag flag = this.flagCarriers.get(player);
+    Team flagTeam = this.flagCarriers.get(player);
     removeCarrier(player);
-    flag.place(player.getLocation());
-    outputManager.onFlagDrop(player);
+    flagTeam.placeFlag(player.getLocation());
+    outputManager.onFlagDrop(player, flagTeam);
   }
 
   /**
@@ -108,12 +108,12 @@ public class GameManager {
   }
 
   public void onFlagCapture(Player capturePlayer) {
-    Flag flag = this.flagCarriers.get(capturePlayer);
+    Team flagTeam = this.flagCarriers.get(capturePlayer);
     removeCarrier(capturePlayer);
-    flag.returnToBase();
+    flagTeam.returnFlag();
     Team captureTeam = teamManager.getPlayerTeam(capturePlayer);
     captureTeam.incrementScore();
-    outputManager.onFlagCapture(captureTeam);
+    outputManager.onFlagCapture(captureTeam, flagTeam);
     if (captureTeam.getScore() >= SCORE_TO_WIN) {
       outputManager.onTeamWin(captureTeam);
       this.stopGame();

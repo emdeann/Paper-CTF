@@ -4,8 +4,8 @@ import java.util.Optional;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.emdeann.captureTheFlag.Flag;
 import org.emdeann.captureTheFlag.GameManager;
+import org.emdeann.captureTheFlag.Team;
 import org.emdeann.captureTheFlag.TeamManager;
 
 public class BlockBreakListener implements Listener {
@@ -24,8 +24,9 @@ public class BlockBreakListener implements Listener {
    */
   @EventHandler
   public void onBlockBreak(BlockBreakEvent event) {
-    Optional<Flag> flag = teamManager.getObtainableFlag(event.getBlock(), event.getPlayer(), false);
-    flag.ifPresent(value -> gameManager.onFlagPickup(event.getPlayer(), value));
+    Optional<Team> flagTeam =
+        teamManager.getObtainableFlag(event.getBlock(), event.getPlayer(), false);
+    flagTeam.ifPresent(team -> gameManager.onFlagPickup(event.getPlayer(), team));
     // The game does not allow block breaks
     event.setCancelled(true);
   }

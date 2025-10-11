@@ -107,6 +107,23 @@ public class OutputManager {
     sendMessageToPlayers("The timer is up!");
   }
 
+  public void onTimerTick(int timer) {
+    if (timer <= 0) {
+      return;
+    }
+
+    this.scoreObjective.getScore("Time Left:").setScore(timer);
+
+    if (timer % 60 == 0) {
+      int minutesLeft = timer / 60;
+      String minuteStr = minutesLeft > 1 ? " minutes" : " minute";
+      sendMessageToPlayers(timer / 60 + minuteStr + " left!");
+    } else if ((timer <= 30 && timer % 5 == 0) || timer <= 5) {
+      String secondsStr = timer > 1 ? " seconds" : " second";
+      sendMessageToPlayers("The game ends in " + timer + secondsStr + "!");
+    }
+  }
+
   /**
    * Returns a given string with the first letter uppercase and the others lowercase
    *

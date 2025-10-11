@@ -11,11 +11,11 @@ import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.emdeann.captureTheFlag.Events.BlockBreakListener;
 import org.emdeann.captureTheFlag.Events.PlayerMoveListener;
 import org.emdeann.captureTheFlag.Events.PlayerRemoveListener;
+import org.emdeann.captureTheFlag.Runnables.TimerRunnable;
 
 /**
  * Manager for general game functions. Handles game state and events, such as pickups and captures.
@@ -31,6 +31,7 @@ public class GameManager {
   private @Nullable BukkitTask gameTimer;
 
   private static final int SCORE_TO_WIN = 3;
+  private static final int GAME_TIMER_SECONDS = 600;
 
   public GameManager(CaptureTheFlag plugin, TeamManager teamManager, OutputManager outputManager) {
     this.plugin = plugin;
@@ -57,13 +58,8 @@ public class GameManager {
     }
 
     this.gameTimer =
-        new BukkitRunnable() {
-          @Override
-          public void run() {
-            outputManager.onTimeOut();
-            stopGame(false);
-          }
-        }.runTaskLater(this.plugin, Tick.tick().fromDuration(Duration.ofMinutes(10)));
+        new TimerRunnable(this, outputManager, GAME_TIMER_SECONDS)
+            .runTaskTimer(this.plugin, 0, Tick.tick().fromDuration(Duration.ofSeconds(1)));
 
     gameActive = true;
     this.flagCarriers = new HashMap<>();

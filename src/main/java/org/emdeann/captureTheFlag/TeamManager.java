@@ -1,5 +1,6 @@
 package org.emdeann.captureTheFlag;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import org.bukkit.Location;
@@ -110,5 +111,12 @@ public class TeamManager {
   public boolean canStartGame() {
     return teams.values().stream()
         .allMatch(team -> team.playerCount() > 0 && team.getFlag().isPresent());
+  }
+
+  /**
+   * @return a collection of all teams in the game.
+   */
+  public Collection<Team> getTeams() {
+    return teams.values();
   }
 }

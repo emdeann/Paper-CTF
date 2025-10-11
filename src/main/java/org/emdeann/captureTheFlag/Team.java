@@ -12,10 +12,12 @@ public class Team {
   private final ArrayList<Player> players;
   private final CTFTeam teamColor;
   private @Nullable Flag flag;
+  private int score;
 
   public Team(CTFTeam teamColor) {
     this.players = new ArrayList<>();
     this.teamColor = teamColor;
+    this.score = 0;
   }
 
   /**
@@ -69,5 +71,31 @@ public class Team {
    */
   public Optional<Flag> getFlag() {
     return Optional.ofNullable(flag);
+  }
+
+  /**
+   * @return this team's score
+   */
+  public int getScore() {
+    return score;
+  }
+
+  /** Increment this team's score when a capture occurs. */
+  public void incrementScore() {
+    score++;
+  }
+
+  /**
+   * @return the color of this team
+   */
+  public CTFTeam getTeamColor() {
+    return this.teamColor;
+  }
+
+  /**
+   * @return the players on this team
+   */
+  public ArrayList<Player> getPlayers() {
+    return players;
   }
 }

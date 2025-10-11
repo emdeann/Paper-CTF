@@ -12,7 +12,8 @@ public final class CaptureTheFlag extends JavaPlugin {
   @Override
   public void onEnable() {
     TeamManager teamManager = new TeamManager();
-    GameManager gameManager = new GameManager(this, teamManager);
+    OutputManager outputManager = new OutputManager(teamManager);
+    GameManager gameManager = new GameManager(this, teamManager, outputManager);
     LiteralCommandNode<CommandSourceStack> ctfCommands =
         Commands.literal("ctf")
             .then(JoinTeamCommand.createCommand(teamManager))

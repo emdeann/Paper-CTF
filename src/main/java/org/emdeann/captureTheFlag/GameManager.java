@@ -18,13 +18,15 @@ import org.emdeann.captureTheFlag.Events.PlayerRemoveListener;
 public class GameManager {
   private final CaptureTheFlag plugin;
   private final TeamManager teamManager;
+  private OutputManager outputManager;
   private boolean gameActive;
   private final Listener[] listeners;
   private Map<Player, Flag> flagCarriers;
 
-  public GameManager(CaptureTheFlag plugin, TeamManager teamManager) {
+  public GameManager(CaptureTheFlag plugin, TeamManager teamManager, OutputManager outputManager) {
     this.plugin = plugin;
     this.teamManager = teamManager;
+    this.outputManager = outputManager;
     this.listeners =
         new Listener[] {
           new BlockBreakListener(this, teamManager),
@@ -47,6 +49,7 @@ public class GameManager {
 
     gameActive = true;
     this.flagCarriers = new HashMap<>();
+    this.outputManager.onGameStart();
     teamManager.placeFlags();
     for (Listener listener : this.listeners) {
       plugin.getServer().getPluginManager().registerEvents(listener, plugin);
@@ -117,6 +120,7 @@ public class GameManager {
         .forEach(player -> player.removePotionEffect(PotionEffectType.GLOWING));
     this.flagCarriers.clear();
     this.teamManager.removeFlags();
+    this.outputManager.onGameStop();
     for (Listener listener : this.listeners) {
       HandlerList.unregisterAll(listener);
     }

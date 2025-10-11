@@ -22,6 +22,7 @@ public final class CaptureTheFlag extends JavaPlugin {
             .then(SetFlagCommand.createCommand(teamManager))
             .then(StartGameCommand.createCommand(gameManager))
             .then(StopGameCommand.createCommand(gameManager))
+            .then(GetScoreCommand.createCommand(outputManager))
             .build();
 
     this.getLifecycleManager()

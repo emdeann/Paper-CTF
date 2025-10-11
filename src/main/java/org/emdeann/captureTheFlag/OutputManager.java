@@ -6,6 +6,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -122,6 +123,20 @@ public class OutputManager {
       String secondsStr = timer > 1 ? " seconds" : " second";
       sendMessageToPlayers("The game ends in " + timer + secondsStr + "!");
     }
+  }
+
+  public TextComponent getScoreText() {
+    TextComponent scoreText = Component.text("Scores:");
+    for (Team team : teamManager.getTeams()) {
+      scoreText =
+          scoreText
+              .appendNewline()
+              .append(
+                  Component.text(teamColors.get(team.getTeamColor()) + getTeamDisplayName(team)))
+              .append(Component.text(": " + team.getScore()));
+    }
+
+    return scoreText;
   }
 
   /**

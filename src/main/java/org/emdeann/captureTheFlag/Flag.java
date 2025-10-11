@@ -52,7 +52,7 @@ public class Flag {
   }
 
   public void pickUp() {
-    if (this.currentLocation.toVector().equals(this.baseLocation.toVector())) {
+    if (this.isAtBase()) {
       this.currentLocation.getBlock().setType(Material.BEDROCK);
     } else {
       this.remove();
@@ -71,5 +71,9 @@ public class Flag {
   public void returnToBase() {
     this.remove();
     this.place(baseLocation);
+  }
+
+  public boolean isAtBase() {
+    return this.currentLocation.toVector().equals(this.baseLocation.toVector());
   }
 }

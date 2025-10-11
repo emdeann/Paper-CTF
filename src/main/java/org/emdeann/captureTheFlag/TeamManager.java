@@ -43,6 +43,10 @@ public class TeamManager {
     }
   }
 
+  public Team getPlayerTeam(Player player) {
+    return teams.values().stream().filter(team -> team.hasPlayer(player)).findFirst().orElseThrow();
+  }
+
   /**
    * Determines if a player is on any team.
    *
@@ -63,7 +67,7 @@ public class TeamManager {
    * @param team The team for which to set the flag location
    */
   public void setFlagLocationForTeam(Location location, CTFTeam team) {
-    teams.get(team).setFlag(location);
+    teams.get(team).setBaseLocation(location);
   }
 
   /** Places each team's flag at their base location. */
@@ -78,6 +82,19 @@ public class TeamManager {
     for (Team team : teams.values()) {
       team.getFlag().ifPresent(Flag::remove);
     }
+  }
+
+  /**
+   * Determines if the specified player is near enough to their own base to capture a flag.
+   *
+   * <p>Does not check if the player is actually carrying a flag.
+   *
+   * @param player the player to check
+   * @return if the player is near enough to their base to capture a flag
+   */
+  public boolean canCaptureFlag(Player player) {
+    return teams.values().stream()
+        .anyMatch(team -> team.hasPlayer(player) && team.isNearBase(player));
   }
 
   /**
@@ -98,7 +115,8 @@ public class TeamManager {
         .filter(team -> team.hasPlayer(player) == returnFlag)
         .map(Team::getFlag)
         .flatMap(Optional::stream)
-        .filter(flag -> flag.getLocation().getBlock().equals(block))
+        .filter(
+            flag -> flag.getLocation().getBlock().equals(block) && !(returnFlag && flag.isAtBase()))
         .findFirst();
   }
 

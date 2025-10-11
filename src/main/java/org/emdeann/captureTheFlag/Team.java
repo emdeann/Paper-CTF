@@ -13,6 +13,9 @@ public class Team {
   private final CTFTeam teamColor;
   private @Nullable Flag flag;
   private int score;
+  private @Nullable Location baseLocation;
+
+  private static final int CAPTURE_DISTANCE = 3;
 
   public Team(CTFTeam teamColor) {
     this.players = new ArrayList<>();
@@ -61,9 +64,22 @@ public class Team {
    *
    * @param location the location to use
    */
-  public void setFlag(Location location) {
+  public void setBaseLocation(Location location) {
+    this.baseLocation = location;
     this.flag =
         new Flag(location, teamColor == CTFTeam.RED ? Material.RED_WOOL : Material.BLUE_WOOL);
+  }
+
+  /**
+   * Returns if a player is within capture distance of this team's base.
+   *
+   * @param player the player to check
+   * @return if the player is near this team's base
+   */
+  public boolean isNearBase(Player player) {
+    return this.baseLocation != null
+        && (player.getLocation().toVector().distanceSquared(this.baseLocation.toVector())
+            < CAPTURE_DISTANCE * CAPTURE_DISTANCE);
   }
 
   /**

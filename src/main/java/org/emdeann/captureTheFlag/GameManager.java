@@ -18,10 +18,12 @@ import org.emdeann.captureTheFlag.Events.PlayerRemoveListener;
 public class GameManager {
   private final CaptureTheFlag plugin;
   private final TeamManager teamManager;
-  private OutputManager outputManager;
+  private final OutputManager outputManager;
   private boolean gameActive;
   private final Listener[] listeners;
   private Map<Player, Flag> flagCarriers;
+
+  private static final int SCORE_TO_WIN = 3;
 
   public GameManager(CaptureTheFlag plugin, TeamManager teamManager, OutputManager outputManager) {
     this.plugin = plugin;
@@ -79,6 +81,7 @@ public class GameManager {
     player.addPotionEffect(
         new PotionEffect(PotionEffectType.GLOWING, PotionEffect.INFINITE_DURATION, 1));
     flag.pickUp();
+    outputManager.onFlagPickup(player);
   }
 
   /**
@@ -89,9 +92,9 @@ public class GameManager {
    */
   public void onFlagDrop(Player player) {
     Flag flag = this.flagCarriers.get(player);
-    this.flagCarriers.remove(player);
-    player.removePotionEffect(PotionEffectType.GLOWING);
+    removeCarrier(player);
     flag.place(player.getLocation());
+    outputManager.onFlagDrop(player);
   }
 
   /**
@@ -99,8 +102,30 @@ public class GameManager {
    *
    * @param flag the flag being returned
    */
-  public void onFlagReturn(Flag flag) {
+  public void onFlagReturn(Flag flag, Player returner) {
     flag.returnToBase();
+    outputManager.onFlagReturn(returner);
+  }
+
+  public void onFlagCapture(Player capturePlayer) {
+    Flag flag = this.flagCarriers.get(capturePlayer);
+    removeCarrier(capturePlayer);
+    flag.returnToBase();
+    Team captureTeam = teamManager.getPlayerTeam(capturePlayer);
+    captureTeam.incrementScore();
+    outputManager.onFlagCapture(captureTeam);
+    if (captureTeam.getScore() >= SCORE_TO_WIN) {
+      outputManager.onTeamWin(captureTeam);
+      this.stopGame();
+    }
+  }
+
+  /**
+   * @param player the player to check
+   * @return if the player is carrying a flag
+   */
+  public boolean playerHasFlag(Player player) {
+    return this.flagCarriers.containsKey(player);
   }
 
   /**
@@ -126,5 +151,10 @@ public class GameManager {
     }
 
     return true;
+  }
+
+  private void removeCarrier(Player carrier) {
+    this.flagCarriers.remove(carrier);
+    carrier.removePotionEffect(PotionEffectType.GLOWING);
   }
 }

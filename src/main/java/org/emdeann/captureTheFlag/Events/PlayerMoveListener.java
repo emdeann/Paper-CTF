@@ -1,6 +1,7 @@
 package org.emdeann.captureTheFlag.Events;
 
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
@@ -19,10 +20,15 @@ public class PlayerMoveListener implements Listener {
   /** Returns the flag if it is touched by a player on the same team. */
   @EventHandler
   public void onPlayerMove(PlayerMoveEvent event) {
+    Player player = event.getPlayer();
+
     // TODO should work when touching any face of the flag
     teamManager
-        .getObtainableFlag(
-            event.getTo().getBlock().getRelative(BlockFace.DOWN), event.getPlayer(), true)
-        .ifPresent(gameManager::onFlagReturn);
+        .getObtainableFlag(event.getTo().getBlock().getRelative(BlockFace.DOWN), player, true)
+        .ifPresent(flag -> gameManager.onFlagReturn(flag, player));
+
+    if (gameManager.playerHasFlag(player) && teamManager.canCaptureFlag(player)) {
+      gameManager.onFlagCapture(player);
+    }
   }
 }

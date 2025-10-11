@@ -6,11 +6,13 @@ import java.util.Map;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
 public class OutputManager {
   private final Scoreboard scoreboard;
   private final TeamManager teamManager;
+  private final Objective scoreObjective;
   private static final Map<CTFTeam, String> teamColors =
       Map.of(
           CTFTeam.RED, "§4",
@@ -20,16 +22,16 @@ public class OutputManager {
     this.teamManager = teamManager;
     this.scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
     Collection<Team> teams = teamManager.getTeams();
-    Objective objective =
+    this.scoreObjective =
         scoreboard.registerNewObjective(
             "scores",
             Criteria.DUMMY,
             Component.text("Capture The Flag!").color(TextColor.color(0x8300FF)));
-    objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+    scoreObjective.setDisplaySlot(DisplaySlot.SIDEBAR);
     for (Team team : teams) {
-      String teamName = toTitleCase(String.valueOf(team.getTeamColor()));
-
-      Score teamScore = objective.getScore(teamColors.get(team.getTeamColor()) + teamName + ":");
+      Score teamScore =
+          scoreObjective.getScore(
+              teamColors.get(team.getTeamColor()) + getTeamDisplayName(team) + ":");
       teamScore.setScore(team.getScore());
     }
   }
@@ -47,6 +49,43 @@ public class OutputManager {
     for (Team team : teamManager.getTeams()) {
       team.getPlayers().forEach(player -> player.setScoreboard(dummy));
     }
+  }
+
+  private void sendMessageToPlayers(String message) {
+    for (Team team : teamManager.getTeams()) {
+      team.getPlayers().forEach(player -> player.sendMessage(Component.text(message)));
+    }
+  }
+
+  private void updateScore(Team team) {
+    this.scoreObjective
+        .getScore(teamColors.get(team.getTeamColor()) + getTeamDisplayName(team) + ":")
+        .setScore(team.getScore());
+  }
+
+  private String getTeamDisplayName(Team team) {
+    return toTitleCase(String.valueOf(team.getTeamColor()));
+  }
+
+  public void onFlagPickup(Player player) {
+    sendMessageToPlayers(player.getName() + " has picked up a flag!");
+  }
+
+  public void onFlagDrop(Player player) {
+    sendMessageToPlayers(player.getName() + " has dropped up the flag!");
+  }
+
+  public void onFlagReturn(Player player) {
+    sendMessageToPlayers(player.getName() + " returned their team's flag!");
+  }
+
+  public void onFlagCapture(Team captureTeam) {
+    sendMessageToPlayers(getTeamDisplayName(captureTeam) + " has captured a flag!");
+    this.updateScore(captureTeam);
+  }
+
+  public void onTeamWin(Team winTeam) {
+    sendMessageToPlayers(getTeamDisplayName(winTeam) + " has won the game!");
   }
 
   /**

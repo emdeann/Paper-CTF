@@ -8,12 +8,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.emdeann.captureTheFlag.Commands.*;
 
 public final class CaptureTheFlag extends JavaPlugin {
+  private GameManager gameManager;
 
   @Override
   public void onEnable() {
     TeamManager teamManager = new TeamManager();
     OutputManager outputManager = new OutputManager(teamManager);
-    GameManager gameManager = new GameManager(this, teamManager, outputManager);
+    this.gameManager = new GameManager(this, teamManager, outputManager);
     LiteralCommandNode<CommandSourceStack> ctfCommands =
         Commands.literal("ctf")
             .then(JoinTeamCommand.createCommand(teamManager))
@@ -30,6 +31,6 @@ public final class CaptureTheFlag extends JavaPlugin {
 
   @Override
   public void onDisable() {
-    // Plugin shutdown logic
+    gameManager.stopGame(true);
   }
 }

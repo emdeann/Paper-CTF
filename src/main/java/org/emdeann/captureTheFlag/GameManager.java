@@ -5,13 +5,16 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import javax.annotation.Nullable;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 import org.emdeann.captureTheFlag.Events.BlockBreakListener;
 import org.emdeann.captureTheFlag.Events.PlayerMoveListener;
 import org.emdeann.captureTheFlag.Events.PlayerRemoveListener;
@@ -32,6 +35,8 @@ public class GameManager {
 
   private static final int SCORE_TO_WIN = 3;
   private static final int GAME_TIMER_SECONDS = 600;
+  private static final float RETURN_DISTANCE = 1.1f;
+  private static final Vector UNIT_VECTOR_Y = new Vector(0, 1, 0);
 
   public GameManager(CaptureTheFlag plugin, TeamManager teamManager, OutputManager outputManager) {
     this.plugin = plugin;
@@ -39,9 +44,9 @@ public class GameManager {
     this.outputManager = outputManager;
     this.listeners =
         new Listener[] {
-          new BlockBreakListener(this, teamManager),
+          new BlockBreakListener(this),
           new PlayerRemoveListener(this),
-          new PlayerMoveListener(this, teamManager),
+          new PlayerMoveListener(this),
         };
   }
 
@@ -138,14 +143,6 @@ public class GameManager {
   }
 
   /**
-   * @param player the player to check
-   * @return if the player is carrying a flag
-   */
-  public boolean playerHasFlag(Player player) {
-    return this.flagCarriers.containsKey(player);
-  }
-
-  /**
    * Stops the game and resets the game state.
    *
    * @param force if true, reset the game without game end output
@@ -192,5 +189,73 @@ public class GameManager {
   private void removeCarrier(Player carrier) {
     this.flagCarriers.remove(carrier);
     carrier.removePotionEffect(PotionEffectType.GLOWING);
+  }
+
+  /**
+   * If the block provided is a flag returnable by the player, its team is returned.
+   *
+   * @param player the player attempting to obtain the flag
+   * @return the team of the returnable flag, if it exists
+   */
+  public Optional<Team> getReturnableFlag(Player player) {
+    if (!teamManager.isParticipating(player)) {
+      return Optional.empty();
+    }
+
+    return teamManager.getTeams().stream()
+        .filter(team -> team.hasPlayer(player) && teamFlagIsReturnable(team, player))
+        .findFirst();
+  }
+
+  /**
+   * If the block provided is a flag collectable by the player, its team is returned.
+   *
+   * @param player the player attempting to obtain the flag
+   * @param block the block to check for the flag
+   * @return the team of the obtainable flag, if it exists
+   */
+  public Optional<Team> getObtainableFlag(Player player, Block block) {
+    if (!teamManager.isParticipating(player)) {
+      return Optional.empty();
+    }
+
+    return teamManager.getTeams().stream()
+        .filter(
+            team ->
+                !team.hasPlayer(player)
+                    && team.getFlagLocation().orElseThrow().getBlock().equals(block))
+        .findFirst();
+  }
+
+  /**
+   * Determines if the specified player is near enough to their own base to capture a flag.
+   *
+   * @param player the player to check
+   * @return if the player has a flag and is near enough to their base to capture a flag
+   */
+  public boolean canCaptureFlag(Player player) {
+    if (!this.flagCarriers.containsKey(player)) {
+      return false;
+    }
+    return teamManager.getTeams().stream()
+        .anyMatch(team -> team.hasPlayer(player) && team.isNearBase(player));
+  }
+
+  /**
+   * Returns whether the player is close enough to return the given team's flag.
+   *
+   * @param team the team to check
+   * @param player the player to check
+   * @return if the player is close enough to the flag to return it
+   * @throws java.util.NoSuchElementException if called when the team provided does not have a flag
+   *     set
+   */
+  private boolean teamFlagIsReturnable(Team team, Player player) {
+    Vector flagLoc = team.getFlagLocation().orElseThrow().toVector();
+    Vector playerLoc = player.getLocation().toVector();
+
+    // Consider the player as touching the block if they or their head is near enough
+    return flagLoc.distanceSquared(playerLoc) < RETURN_DISTANCE
+        || flagLoc.distanceSquared(playerLoc.add(UNIT_VECTOR_Y)) < RETURN_DISTANCE;
   }
 }

@@ -3,10 +3,10 @@ package org.emdeann.captureTheFlag;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 import javax.annotation.Nullable;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 /** Represents a single team in a CTF game. */
@@ -110,20 +110,12 @@ public class Team {
     }
   }
 
-  /**
-   * Determines if this team's flag is obtainable, defined by the flag occupying the passed block.
-   * If the flag is being returned, it must not already be at the team's base.
-   *
-   * @param block the block to check
-   * @param returnFlag whether the flag is being returned
-   * @return if the flag is obtainable at the block provided
-   */
-  public boolean flagIsObtainable(Block block, boolean returnFlag) {
-    if (flag == null || returnFlag && flagAtBase()) {
-      return false;
+  public Optional<Location> getFlagLocation() {
+    if (flag == null) {
+      return Optional.empty();
     }
 
-    return flag.getLocation().getBlock().equals(block);
+    return Optional.of(flag.getLocation());
   }
 
   /**

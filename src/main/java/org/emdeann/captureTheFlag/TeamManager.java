@@ -2,7 +2,6 @@ package org.emdeann.captureTheFlag;
 
 import java.util.*;
 import org.bukkit.Location;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
 /**
@@ -74,40 +73,6 @@ public class TeamManager {
   /** Removes each team's flag at the end of the game. */
   public void removeFlags() {
     teams.values().forEach(Team::removeFlag);
-  }
-
-  /**
-   * Determines if the specified player is near enough to their own base to capture a flag.
-   *
-   * <p>Does not check if the player is actually carrying a flag.
-   *
-   * @param player the player to check
-   * @return if the player is near enough to their base to capture a flag
-   */
-  public boolean canCaptureFlag(Player player) {
-    return teams.values().stream()
-        .anyMatch(team -> team.hasPlayer(player) && team.isNearBase(player));
-  }
-
-  /**
-   * If the block provided is a flag collectable or returnable by the player, it is returned.
-   *
-   * @param block the block to check
-   * @param player the player attempting to obtain the flag
-   * @param returnFlag true when testing if the flag is returnable (i.e. if the player matches the
-   *     team of the flag)
-   * @return the obtainable flag, if it exists
-   */
-  public Optional<Team> getObtainableFlag(Block block, Player player, boolean returnFlag) {
-    if (!isParticipating(player)) {
-      return Optional.empty();
-    }
-
-    return teams.values().stream()
-        .filter(
-            team ->
-                team.hasPlayer(player) == returnFlag && team.flagIsObtainable(block, returnFlag))
-        .findFirst();
   }
 
   /**

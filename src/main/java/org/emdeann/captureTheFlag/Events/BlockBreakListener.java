@@ -6,16 +6,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.emdeann.captureTheFlag.GameManager;
 import org.emdeann.captureTheFlag.Team;
-import org.emdeann.captureTheFlag.TeamManager;
 
 public class BlockBreakListener implements Listener {
 
   private final GameManager gameManager;
-  private final TeamManager teamManager;
 
-  public BlockBreakListener(GameManager gameManager, TeamManager teamManager) {
+  public BlockBreakListener(GameManager gameManager) {
     this.gameManager = gameManager;
-    this.teamManager = teamManager;
   }
 
   /**
@@ -24,8 +21,7 @@ public class BlockBreakListener implements Listener {
    */
   @EventHandler
   public void onBlockBreak(BlockBreakEvent event) {
-    Optional<Team> flagTeam =
-        teamManager.getObtainableFlag(event.getBlock(), event.getPlayer(), false);
+    Optional<Team> flagTeam = gameManager.getObtainableFlag(event.getPlayer(), event.getBlock());
     flagTeam.ifPresent(team -> gameManager.onFlagPickup(event.getPlayer(), team));
     // The game does not allow block breaks
     event.setCancelled(true);

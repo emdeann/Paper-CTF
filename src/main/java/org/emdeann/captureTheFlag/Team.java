@@ -1,7 +1,8 @@
 package org.emdeann.captureTheFlag;
 
 import java.util.ArrayList;
-import java.util.Optional;
+import java.util.Collection;
+import java.util.Collections;
 import javax.annotation.Nullable;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -83,42 +84,66 @@ public class Team {
             < CAPTURE_DISTANCE * CAPTURE_DISTANCE);
   }
 
-  /**
-   * @return the flag of the team, if it has been set
-   */
-  private Optional<Flag> getFlag() {
-    return Optional.ofNullable(flag);
-  }
-
   public void placeFlag() {
-    this.getFlag().ifPresent(Flag::place);
+    if (flag != null) {
+      flag.place();
+    }
   }
 
   public void placeFlag(Location location) {
-    this.getFlag().ifPresent(flag -> flag.place(location));
+    if (flag != null) {
+      flag.place(location);
+    }
   }
 
   public void removeFlag() {
-    this.getFlag().ifPresent(Flag::remove);
+    if (flag != null) {
+      flag.remove();
+    }
   }
 
+  /**
+   * Determines if this team's flag is obtainable, defined by the flag occupying the passed block.
+   * If the flag is being returned, it must not already be at the team's base.
+   *
+   * @param block the block to check
+   * @param returnFlag whether the flag is being returned
+   * @return if the flag is obtainable at the block provided
+   */
   public boolean flagIsObtainable(Block block, boolean returnFlag) {
-    return this.getFlag()
-        .map(
-            flag -> flag.getLocation().getBlock().equals(block) && !(returnFlag && flag.isAtBase()))
-        .orElse(false);
+    if (flag == null || returnFlag && flagAtBase()) {
+      return false;
+    }
+
+    return flag.getLocation().getBlock().equals(block);
   }
 
   public void pickUpFlag() {
-    this.getFlag().ifPresent(Flag::pickUp);
+    if (flag == null) {
+      return;
+    }
+
+    // If the flag is home, replace it with bedrock to demonstrate that it is missing
+    if (flagAtBase()) {
+      flag.getLocation().getBlock().setType(Material.BEDROCK);
+    } else {
+      flag.remove();
+    }
   }
 
   public void returnFlag() {
-    this.getFlag().ifPresent(Flag::returnToBase);
+    this.removeFlag();
+    this.placeFlag(this.baseLocation);
+  }
+
+  public boolean flagAtBase() {
+    return this.flag != null
+        && this.baseLocation != null
+        && this.flag.getLocation().toVector().equals(baseLocation.toVector());
   }
 
   public boolean hasFlag() {
-    return this.getFlag().isPresent();
+    return this.flag != null;
   }
 
   /**
@@ -143,7 +168,7 @@ public class Team {
   /**
    * @return the players on this team
    */
-  public ArrayList<Player> getPlayers() {
-    return players;
+  public Collection<Player> getPlayers() {
+    return Collections.unmodifiableCollection(players);
   }
 }

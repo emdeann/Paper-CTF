@@ -8,7 +8,6 @@ import org.bukkit.Material;
  * its base.
  */
 public class Flag {
-  private final Location baseLocation;
   private Location currentLocation;
   private final Material blockType;
 
@@ -20,7 +19,6 @@ public class Flag {
 
   public Flag(Location baseLocation, Material blockType) {
     this.blockType = blockType;
-    this.baseLocation = baseLocation;
     this.currentLocation = baseLocation;
     this.previousMaterialAtLocation = Material.AIR;
   }
@@ -51,29 +49,11 @@ public class Flag {
     return this.currentLocation;
   }
 
-  public void pickUp() {
-    if (this.isAtBase()) {
-      this.currentLocation.getBlock().setType(Material.BEDROCK);
-    } else {
-      this.remove();
-    }
-  }
-
   /**
    * Removes the flag by setting the material at its current location to {@link
    * Flag#previousMaterialAtLocation}.
    */
   public void remove() {
     this.currentLocation.getBlock().setType(this.previousMaterialAtLocation);
-  }
-
-  /** Returns the flag by removing it and replacing it at its base location. */
-  public void returnToBase() {
-    this.remove();
-    this.place(baseLocation);
-  }
-
-  public boolean isAtBase() {
-    return this.currentLocation.toVector().equals(this.baseLocation.toVector());
   }
 }

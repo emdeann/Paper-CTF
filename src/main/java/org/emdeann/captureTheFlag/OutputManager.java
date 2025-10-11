@@ -39,14 +39,14 @@ public class OutputManager {
     }
   }
 
-  /** Present the scoreboard to participating players when the game starts. */
+  /** Presents the scoreboard to participating players when the game starts. */
   public void onGameStart() {
     for (Team team : teamManager.getTeams()) {
       team.getPlayers().forEach(player -> player.setScoreboard(this.scoreboard));
     }
   }
 
-  /** Remove the scoreboard from view when the game is stopped */
+  /** Removes the scoreboard from view when the game is stopped */
   public void onGameStop() {
     Scoreboard dummy = Bukkit.getScoreboardManager().getNewScoreboard();
     for (Team team : teamManager.getTeams()) {
@@ -54,36 +54,75 @@ public class OutputManager {
     }
   }
 
+  /**
+   * Sends a message to all participating players.
+   *
+   * @param message the message to send
+   */
   private void sendMessageToPlayers(String message) {
     for (Team team : teamManager.getTeams()) {
       team.getPlayers().forEach(player -> player.sendMessage(Component.text(message)));
     }
   }
 
+  /**
+   * Updates the score entry on the leaderboard for a particular team.
+   *
+   * @param team the team to update
+   */
   private void updateScore(Team team) {
     this.scoreObjective
         .getScore(teamColors.get(team.getTeamColor()) + getTeamDisplayName(team) + ":")
         .setScore(team.getScore());
   }
 
+  /**
+   * Gets a team's name, formatted in title case.
+   *
+   * @param team the team
+   * @return the team's name, ready to be displayed
+   */
   private String getTeamDisplayName(Team team) {
     return toTitleCase(String.valueOf(team.getTeamColor()));
   }
 
+  /**
+   * Display output when a team's flag is picked up.
+   *
+   * @param player the player who picked up the flag
+   * @param flagTeam the team which the flag belongs to
+   */
   public void onFlagPickup(Player player, Team flagTeam) {
     sendMessageToPlayers(
         player.getName() + " has picked up " + getTeamDisplayName(flagTeam) + "'s flag!");
   }
 
+  /**
+   * Display output when a team's flag is dropped.
+   *
+   * @param player the player who dropped the flag
+   * @param flagTeam the team which the flag belongs to
+   */
   public void onFlagDrop(Player player, Team flagTeam) {
     sendMessageToPlayers(
         player.getName() + " has dropped " + getTeamDisplayName(flagTeam) + "'s flag!");
   }
 
+  /**
+   * Display output when a flag was returned.
+   *
+   * @param player the player who returned the flag
+   */
   public void onFlagReturn(Player player) {
     sendMessageToPlayers(player.getName() + " returned their team's flag!");
   }
 
+  /**
+   * Display output when a flag has been captured.
+   *
+   * @param captureTeam the team capturing the flag
+   * @param flagTeam the team whose flag was captured
+   */
   public void onFlagCapture(Team captureTeam, Team flagTeam) {
     sendMessageToPlayers(
         getTeamDisplayName(captureTeam)
@@ -93,10 +132,20 @@ public class OutputManager {
     this.updateScore(captureTeam);
   }
 
+  /**
+   * Display output when a single team has won the game
+   *
+   * @param winTeam the team that won
+   */
   public void onTeamWin(Team winTeam) {
     sendMessageToPlayers(getTeamDisplayName(winTeam) + " has won the game!");
   }
 
+  /**
+   * Display output when the game ends in a draw
+   *
+   * @param drawTeams the teams which tied
+   */
   public void onDraw(List<Team> drawTeams) {
     String teamNames =
         drawTeams.stream().map(this::getTeamDisplayName).collect(Collectors.joining(", "));
@@ -104,10 +153,16 @@ public class OutputManager {
     sendMessageToPlayers("The game has ended in a draw between " + teamNames + "!");
   }
 
+  /** Display output when time runs out in the game */
   public void onTimeOut() {
     sendMessageToPlayers("The timer is up!");
   }
 
+  /**
+   * Updates scoreboard and displays necessary output when the timer ticks down.
+   *
+   * @param timer the current time in seconds left on the timer
+   */
   public void onTimerTick(int timer) {
     if (timer <= 0) {
       return;
@@ -125,6 +180,12 @@ public class OutputManager {
     }
   }
 
+  /**
+   * Gets the current score in component form. Teams in an inactive game will display scores of
+   * zero.
+   *
+   * @return formatted version of the current score
+   */
   public TextComponent getScoreText() {
     TextComponent scoreText = Component.text("Scores:");
     for (Team team : teamManager.getTeams()) {

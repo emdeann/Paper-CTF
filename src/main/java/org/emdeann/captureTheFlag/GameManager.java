@@ -119,6 +119,12 @@ public class GameManager {
     outputManager.onFlagReturn(returner);
   }
 
+  /**
+   * Handles when a flag should be captured by a player. The player must be actively carrying a
+   * flag.
+   *
+   * @param capturePlayer the player capturing the flag
+   */
   public void onFlagCapture(Player capturePlayer) {
     Team flagTeam = this.flagCarriers.get(capturePlayer);
     removeCarrier(capturePlayer);
@@ -177,6 +183,12 @@ public class GameManager {
     return true;
   }
 
+  /**
+   * Removes a player as a flag carrier by updating {@link GameManager#flagCarriers} and removing
+   * the glowing effect.
+   *
+   * @param carrier the flag carrier to remove
+   */
   private void removeCarrier(Player carrier) {
     this.flagCarriers.remove(carrier);
     carrier.removePotionEffect(PotionEffectType.GLOWING);

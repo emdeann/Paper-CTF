@@ -84,18 +84,26 @@ public class Team {
             < CAPTURE_DISTANCE * CAPTURE_DISTANCE);
   }
 
-  public void placeFlag() {
-    if (flag != null) {
-      flag.place();
+  /** Place this team's flag at the base location, as long as it has been set. */
+  public void placeFlagAtBase() {
+    if (flag != null && baseLocation != null) {
+      flag.place(baseLocation);
     }
   }
 
+  /**
+   * Place this team's flag at the specified location. The flag must be created through {@link
+   * Team#setBaseLocation} first.
+   *
+   * @param location the location at which to place the flag
+   */
   public void placeFlag(Location location) {
     if (flag != null) {
       flag.place(location);
     }
   }
 
+  /** Removes the flag from the ground */
   public void removeFlag() {
     if (flag != null) {
       flag.remove();
@@ -118,12 +126,15 @@ public class Team {
     return flag.getLocation().getBlock().equals(block);
   }
 
+  /**
+   * Picks the flag up by removing it. If the flag was at the team's base, replaces it with bedrock
+   * to demonstrate that it is missing.
+   */
   public void pickUpFlag() {
     if (flag == null) {
       return;
     }
 
-    // If the flag is home, replace it with bedrock to demonstrate that it is missing
     if (flagAtBase()) {
       flag.getLocation().getBlock().setType(Material.BEDROCK);
     } else {
@@ -131,17 +142,24 @@ public class Team {
     }
   }
 
+  /** Removes the flag from its current location and places it at the team's base. */
   public void returnFlag() {
     this.removeFlag();
     this.placeFlag(this.baseLocation);
   }
 
+  /**
+   * @return if the flag and base exist, and the flag is at the base location
+   */
   public boolean flagAtBase() {
     return this.flag != null
         && this.baseLocation != null
         && this.flag.getLocation().toVector().equals(baseLocation.toVector());
   }
 
+  /**
+   * @return if the flag has been created through {@link Team#setBaseLocation}
+   */
   public boolean hasFlag() {
     return this.flag != null;
   }

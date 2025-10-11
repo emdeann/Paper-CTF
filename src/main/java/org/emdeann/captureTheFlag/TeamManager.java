@@ -68,7 +68,7 @@ public class TeamManager {
 
   /** Places each team's flag at their base location. */
   public void placeFlags() {
-    teams.values().forEach(Team::placeFlag);
+    teams.values().forEach(Team::placeFlagAtBase);
   }
 
   /** Removes each team's flag at the end of the game. */

@@ -252,6 +252,10 @@ public class GameManager {
    *     set
    */
   private boolean teamFlagIsReturnable(Team team, Player player) {
+    if (team.flagAtBase()) {
+      return false;
+    }
+
     Vector flagLoc = team.getFlagLocation().orElseThrow().toVector();
     Vector playerLoc = player.getLocation().toVector();
 

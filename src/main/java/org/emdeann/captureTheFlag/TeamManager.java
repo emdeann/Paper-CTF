@@ -1,8 +1,6 @@
 package org.emdeann.captureTheFlag;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -127,5 +125,17 @@ public class TeamManager {
    */
   public Collection<Team> getTeams() {
     return teams.values();
+  }
+
+  /**
+   * @return the score leaders of the game. if there is no draw, will be of length 1
+   */
+  public List<Team> getWinners() {
+    int maxScore =
+        teams.values().stream()
+            .max(Comparator.comparingInt(Team::getScore))
+            .orElseThrow()
+            .getScore();
+    return teams.values().stream().filter(team -> team.getScore() == maxScore).toList();
   }
 }

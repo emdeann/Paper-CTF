@@ -1,8 +1,10 @@
 package org.emdeann.captureTheFlag;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
@@ -92,6 +94,17 @@ public class OutputManager {
 
   public void onTeamWin(Team winTeam) {
     sendMessageToPlayers(getTeamDisplayName(winTeam) + " has won the game!");
+  }
+
+  public void onDraw(List<Team> drawTeams) {
+    String teamNames =
+        drawTeams.stream().map(this::getTeamDisplayName).collect(Collectors.joining(", "));
+
+    sendMessageToPlayers("The game has ended in a draw between " + teamNames + "!");
+  }
+
+  public void onTimeOut() {
+    sendMessageToPlayers("The timer is up!");
   }
 
   /**

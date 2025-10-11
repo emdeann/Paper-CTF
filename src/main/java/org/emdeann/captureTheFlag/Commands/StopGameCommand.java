@@ -14,7 +14,7 @@ public class StopGameCommand {
 
   public static int runStopGameCommand(
       CommandContext<CommandSourceStack> ctx, GameManager gameManager) {
-    if (!gameManager.stopGame()) {
+    if (!gameManager.stopGame(false)) {
       ctx.getSource().getSender().sendPlainMessage("Unable to stop game");
     }
     return Command.SINGLE_SUCCESS;

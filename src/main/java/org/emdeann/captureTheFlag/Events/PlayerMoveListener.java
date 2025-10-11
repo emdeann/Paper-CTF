@@ -25,7 +25,7 @@ public class PlayerMoveListener implements Listener {
     // TODO should work when touching any face of the flag
     teamManager
         .getObtainableFlag(event.getTo().getBlock().getRelative(BlockFace.DOWN), player, true)
-        .ifPresent(flag -> gameManager.onFlagReturn(flag, player));
+        .ifPresent(team -> gameManager.onFlagReturn(team, player));
 
     if (gameManager.playerHasFlag(player) && teamManager.canCaptureFlag(player)) {
       gameManager.onFlagCapture(player);

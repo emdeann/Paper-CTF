@@ -1,12 +1,18 @@
 package org.emdeann.captureTheFlag;
 
+import io.papermc.paper.util.Tick;
+import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import javax.annotation.Nullable;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.emdeann.captureTheFlag.Events.BlockBreakListener;
 import org.emdeann.captureTheFlag.Events.PlayerMoveListener;
 import org.emdeann.captureTheFlag.Events.PlayerRemoveListener;
@@ -22,6 +28,7 @@ public class GameManager {
   private boolean gameActive;
   private final Listener[] listeners;
   private Map<Player, Team> flagCarriers;
+  private @Nullable BukkitTask gameTimer;
 
   private static final int SCORE_TO_WIN = 3;
 
@@ -48,6 +55,15 @@ public class GameManager {
       plugin.getLogger().warning("Attempted to start game with invalid state");
       return false;
     }
+
+    this.gameTimer =
+        new BukkitRunnable() {
+          @Override
+          public void run() {
+            outputManager.onTimeOut();
+            stopGame(false);
+          }
+        }.runTaskLater(this.plugin, Tick.tick().fromDuration(Duration.ofMinutes(10)));
 
     gameActive = true;
     this.flagCarriers = new HashMap<>();
@@ -100,10 +116,10 @@ public class GameManager {
   /**
    * Handles when a flag should be returned to its base.
    *
-   * @param flag the flag being returned
+   * @param returnTeam the team with flag being returned
    */
-  public void onFlagReturn(Flag flag, Player returner) {
-    flag.returnToBase();
+  public void onFlagReturn(Team returnTeam, Player returner) {
+    returnTeam.returnFlag();
     outputManager.onFlagReturn(returner);
   }
 
@@ -115,8 +131,7 @@ public class GameManager {
     captureTeam.incrementScore();
     outputManager.onFlagCapture(captureTeam, flagTeam);
     if (captureTeam.getScore() >= SCORE_TO_WIN) {
-      outputManager.onTeamWin(captureTeam);
-      this.stopGame();
+      this.stopGame(false);
     }
   }
 
@@ -131,15 +146,28 @@ public class GameManager {
   /**
    * Stops the game and resets the game state.
    *
+   * @param force if true, reset the game without game end output
    * @return if the game could be stopped (i.e. was active)
    */
-  public boolean stopGame() {
+  public boolean stopGame(boolean force) {
     if (!gameActive) {
       plugin.getLogger().warning("Attempted to end with no game running");
       return false;
     }
 
+    if (!force) {
+      List<Team> winners = teamManager.getWinners();
+      if (winners.size() == 1) {
+        outputManager.onTeamWin(winners.getFirst());
+      } else {
+        outputManager.onDraw(winners);
+      }
+    }
+
     gameActive = false;
+    if (gameTimer != null) {
+      gameTimer.cancel();
+    }
     this.flagCarriers
         .keySet()
         .forEach(player -> player.removePotionEffect(PotionEffectType.GLOWING));

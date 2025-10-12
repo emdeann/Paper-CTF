@@ -39,9 +39,11 @@ public class OutputManager {
     }
   }
 
-  /** Presents the scoreboard to participating players when the game starts. */
+  /** Presents the scoreboard and sends a message to participating players when the game starts. */
   public void onGameStart() {
+    sendMessageToPlayers("The game has started!");
     for (Team team : teamManager.getTeams()) {
+      this.updateScore(team);
       team.getPlayers().forEach(player -> player.setScoreboard(this.scoreboard));
     }
   }

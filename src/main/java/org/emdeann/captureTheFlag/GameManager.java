@@ -170,16 +170,16 @@ public class GameManager {
   /**
    * Stops the game and resets the game state.
    *
-   * @param force if true, reset the game without game end output
+   * @param quiet if true, reset the game without game end output
    * @return if the game could be stopped (i.e. was active)
    */
-  public boolean stopGame(boolean force) {
+  public boolean stopGame(boolean quiet) {
     if (!gameActive) {
       plugin.getLogger().warning("Attempted to end with no game running");
       return false;
     }
 
-    if (!force) {
+    if (!quiet) {
       List<Team> winners = teamManager.getWinners();
       if (winners.size() == 1) {
         outputManager.onTeamWin(winners.getFirst());

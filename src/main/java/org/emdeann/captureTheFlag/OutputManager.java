@@ -113,8 +113,9 @@ public class OutputManager {
    *
    * @param player the player who returned the flag
    */
-  public void onFlagReturn(Player player) {
-    sendMessageToPlayers(player.getName() + " returned their team's flag!");
+  public void onFlagReturn(Player player, Team flagTeam) {
+    sendMessageToPlayers(
+        player.getName() + " returned " + getTeamDisplayName(flagTeam) + "'s flag!");
   }
 
   /**

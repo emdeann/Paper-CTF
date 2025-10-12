@@ -143,7 +143,7 @@ public class GameManager {
    */
   public void onFlagReturn(Team returnTeam, Player returner) {
     returnTeam.returnFlag();
-    outputManager.onFlagReturn(returner);
+    outputManager.onFlagReturn(returner, returnTeam);
   }
 
   /**

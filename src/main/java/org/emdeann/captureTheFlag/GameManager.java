@@ -41,7 +41,7 @@ public class GameManager {
 
   private static final int SCORE_TO_WIN = 3;
   private static final int GAME_TIMER_SECONDS = 600;
-  private static final float RETURN_DISTANCE = 1.1f;
+  private static final float RETURN_DISTANCE = 1.5f;
   private static final ItemStack[] DEFAULT_ITEMS =
       new ItemStack[] {
         new ItemStack(Material.IRON_SWORD),

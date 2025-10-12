@@ -23,6 +23,9 @@ public class BlockBreakListener implements Listener {
   public void onBlockBreak(BlockBreakEvent event) {
     Optional<Team> flagTeam = gameManager.getObtainableFlag(event.getPlayer(), event.getBlock());
     flagTeam.ifPresent(team -> gameManager.onFlagPickup(event.getPlayer(), team));
-    event.setCancelled(true);
+    event.setDropItems(false);
+    if (!event.getBlock().isPassable()) {
+      event.setCancelled(true);
+    }
   }
 }

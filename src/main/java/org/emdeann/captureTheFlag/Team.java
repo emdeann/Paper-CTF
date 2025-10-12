@@ -194,4 +194,9 @@ public class Team {
   public Collection<Player> getPlayers() {
     return Collections.unmodifiableCollection(players);
   }
+
+  /** Set this team's score to zero */
+  public void resetScore() {
+    this.score = 0;
+  }
 }

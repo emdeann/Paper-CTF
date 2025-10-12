@@ -102,9 +102,12 @@ public class GameManager {
    *
    * @param player the player who was removed
    */
-  public void onPlayerRemove(Player player) {
+  public void onPlayerRemove(Player player, boolean disconnect) {
     if (this.flagCarriers.containsKey(player)) {
       this.onFlagDrop(player);
+    }
+    if (disconnect) {
+      teamManager.removePlayer(player);
     }
   }
 
@@ -196,8 +199,7 @@ public class GameManager {
         .keySet()
         .forEach(player -> player.removePotionEffect(PotionEffectType.GLOWING));
     this.flagCarriers.clear();
-    this.teamManager.removeFlags();
-    this.teamManager.resetBases();
+    this.teamManager.reset();
     this.outputManager.onGameStop();
     for (Listener listener : this.listeners) {
       HandlerList.unregisterAll(listener);

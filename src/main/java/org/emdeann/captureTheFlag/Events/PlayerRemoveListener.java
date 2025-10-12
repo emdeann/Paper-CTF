@@ -18,16 +18,16 @@ public class PlayerRemoveListener implements Listener {
   @EventHandler
   public void onPlayerDeath(PlayerDeathEvent event) {
     event.getDrops().clear();
-    gameManager.onPlayerRemove(event.getPlayer());
+    gameManager.onPlayerRemove(event.getPlayer(), false);
   }
 
   @EventHandler
   public void onPlayerQuit(PlayerQuitEvent event) {
-    gameManager.onPlayerRemove(event.getPlayer());
+    gameManager.onPlayerRemove(event.getPlayer(), true);
   }
 
   @EventHandler
   public void onPlayerKick(PlayerKickEvent event) {
-    gameManager.onPlayerRemove(event.getPlayer());
+    gameManager.onPlayerRemove(event.getPlayer(), true);
   }
 }

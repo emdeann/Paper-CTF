@@ -130,4 +130,15 @@ public class TeamManager {
         .getFlagLocation()
         .orElseThrow();
   }
+
+  /** Reset teams for a new game */
+  public void reset() {
+    this.removeFlags();
+    this.resetBases();
+    this.resetScores();
+  }
+
+  private void resetScores() {
+    teams.values().forEach(Team::resetScore);
+  }
 }

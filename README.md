@@ -16,7 +16,8 @@ You can also use
 ./gradlew run
 ```
 
-to build the project and immediately use it in a locally hosted server.
+to build the project and immediately use it in a locally hosted server. (If you choose this option, you will need to
+agree to the EULA in `run/` after running for the first time).
 
 ## Compatibility
 

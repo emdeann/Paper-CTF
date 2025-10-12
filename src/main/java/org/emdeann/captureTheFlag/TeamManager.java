@@ -123,12 +123,7 @@ public class TeamManager {
    * @return the base location of the player's team
    */
   public Location getBaseLocation(Player player) {
-    return teams.values().stream()
-        .filter(team -> team.hasPlayer(player))
-        .findFirst()
-        .orElseThrow()
-        .getFlagLocation()
-        .orElseThrow();
+    return getPlayerTeam(player).getFlagLocation().orElseThrow();
   }
 
   /** Reset teams for a new game */

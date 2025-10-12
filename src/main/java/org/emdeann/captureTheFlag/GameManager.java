@@ -1,5 +1,7 @@
 package org.emdeann.captureTheFlag;
 
+import static org.emdeann.captureTheFlag.Constants.UNIT_VECTOR_Y;
+
 import io.papermc.paper.util.Tick;
 import java.time.Duration;
 import java.util.HashMap;
@@ -40,7 +42,6 @@ public class GameManager {
   private static final int SCORE_TO_WIN = 3;
   private static final int GAME_TIMER_SECONDS = 600;
   private static final float RETURN_DISTANCE = 1.1f;
-  public static final Vector UNIT_VECTOR_Y = new Vector(0, 1, 0);
   private static final ItemStack[] DEFAULT_ITEMS =
       new ItemStack[] {
         new ItemStack(Material.STONE_SWORD),

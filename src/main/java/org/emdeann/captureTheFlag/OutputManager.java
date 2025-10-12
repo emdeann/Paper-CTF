@@ -16,7 +16,7 @@ public class OutputManager {
   private final Scoreboard scoreboard;
   private final TeamManager teamManager;
   private final Objective scoreObjective;
-  private static final Map<CTFTeam, String> teamColors =
+  private static final Map<CTFTeam, String> teamColorCodes =
       Map.of(
           CTFTeam.RED, "§4",
           CTFTeam.BLUE, "§1");
@@ -34,7 +34,7 @@ public class OutputManager {
     for (Team team : teams) {
       Score teamScore =
           scoreObjective.getScore(
-              teamColors.get(team.getTeamColor()) + getTeamDisplayName(team) + ":");
+              teamColorCodes.get(team.getTeamColor()) + getTeamDisplayName(team) + ":");
       teamScore.setScore(team.getScore());
     }
   }
@@ -72,7 +72,7 @@ public class OutputManager {
    */
   private void updateScore(Team team) {
     this.scoreObjective
-        .getScore(teamColors.get(team.getTeamColor()) + getTeamDisplayName(team) + ":")
+        .getScore(teamColorCodes.get(team.getTeamColor()) + getTeamDisplayName(team) + ":")
         .setScore(team.getScore());
   }
 
@@ -193,7 +193,8 @@ public class OutputManager {
           scoreText
               .appendNewline()
               .append(
-                  Component.text(teamColors.get(team.getTeamColor()) + getTeamDisplayName(team)))
+                  Component.text(
+                      teamColorCodes.get(team.getTeamColor()) + getTeamDisplayName(team)))
               .append(Component.text(": " + team.getScore()));
     }
 

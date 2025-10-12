@@ -1,5 +1,7 @@
 package org.emdeann.captureTheFlag.Events;
 
+import static org.emdeann.captureTheFlag.Constants.UNIT_VECTOR_Y;
+
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRespawnEvent;
@@ -17,8 +19,7 @@ public class PlayerRespawnListener implements Listener {
 
   @EventHandler
   public void onPlayerRespawn(PlayerRespawnEvent event) {
-    event.setRespawnLocation(
-        teamManager.getBaseLocation(event.getPlayer()).add(GameManager.UNIT_VECTOR_Y));
+    event.setRespawnLocation(teamManager.getBaseLocation(event.getPlayer()).add(UNIT_VECTOR_Y));
     gameManager.onPlayerRespawn(event.getPlayer());
   }
 }

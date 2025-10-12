@@ -18,7 +18,9 @@ public class PlayerMoveListener implements Listener {
   public void onPlayerMove(PlayerMoveEvent event) {
     Player player = event.getPlayer();
 
-    gameManager.getReturnableFlag(player).ifPresent(team -> gameManager.onFlagReturn(team, player));
+    gameManager
+        .getReturnableFlagTeam(player)
+        .ifPresent(team -> gameManager.onFlagReturn(team, player));
 
     if (gameManager.canCaptureFlag(player)) {
       gameManager.onFlagCapture(player);

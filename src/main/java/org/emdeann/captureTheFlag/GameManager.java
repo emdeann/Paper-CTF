@@ -225,7 +225,7 @@ public class GameManager {
    * @param player the player attempting to obtain the flag
    * @return the team of the returnable flag, if it exists
    */
-  public Optional<Team> getReturnableFlag(Player player) {
+  public Optional<Team> getReturnableFlagTeam(Player player) {
     if (!teamManager.isParticipating(player)) {
       return Optional.empty();
     }
@@ -242,7 +242,7 @@ public class GameManager {
    * @param block the block to check for the flag
    * @return the team of the obtainable flag, if it exists
    */
-  public Optional<Team> getObtainableFlag(Player player, Block block) {
+  public Optional<Team> getObtainableFlagTeam(Player player, Block block) {
     if (!teamManager.isParticipating(player)) {
       return Optional.empty();
     }

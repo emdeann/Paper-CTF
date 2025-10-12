@@ -44,10 +44,9 @@ public class GameManager {
   private static final float RETURN_DISTANCE = 1.1f;
   private static final ItemStack[] DEFAULT_ITEMS =
       new ItemStack[] {
-        new ItemStack(Material.STONE_SWORD),
-        new ItemStack(Material.STONE_PICKAXE),
+        new ItemStack(Material.IRON_SWORD),
         new ItemStack(Material.COOKED_BEEF, 4),
-        new ItemStack(Material.STONE, 32)
+        new ItemStack(Material.GOLDEN_APPLE, 1)
       };
   private static final ItemStack[] DEFAULT_ARMOR =
       new ItemStack[] {
